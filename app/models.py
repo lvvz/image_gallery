@@ -6,6 +6,11 @@ import imagekit.models
 from imagekit.processors import ResizeToFit
 
 
+class VisibleManager(models.Manager):
+    def get_queryset(self):
+        return super(VisibleManager,self).get_queryset().filter(is_visible=True)
+
+
 class Album(models.Model):
     title = models.CharField(max_length=70)
     description = models.TextField(max_length=1024)
@@ -22,6 +27,8 @@ class Album(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length=50, unique=True)
+
+    visible = VisibleManager()
 
     def __unicode__(self):
         return self.title
