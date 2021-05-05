@@ -25,10 +25,15 @@ class Description(models.Model):
     text = models.TextField(max_length=1024)
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+
 class Element(models.Model):
-    author = models.ForeignKey('author', on_delete=models.CASCADE)
-    timestamp = models.ForeignKey('timestamp', on_delete=models.CASCADE)
-    description = models.ForeignKey('description', on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    timestamp = models.ForeignKey(Timestamp, on_delete=models.CASCADE)
+    description = models.ForeignKey(Description, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag)
 
 
 def image_field(size, quality):
@@ -43,9 +48,8 @@ def image_field(size, quality):
 
 
 class Album(models.Model):
-    element = models.ForeignKey('element', on_delete=models.CASCADE)
+    element = models.ForeignKey(Element, on_delete=models.CASCADE)
     thumb = image_field(size=300, quality=90)
-    tags = models.CharField(max_length=250)
     is_visible = models.BooleanField(default=True)
     slug = models.SlugField(max_length=50, unique=True)
 
@@ -53,8 +57,8 @@ class Album(models.Model):
 
 
 class Image(models.Model):
-    element = models.ForeignKey('element', on_delete=models.CASCADE)
-    album = models.ForeignKey('album', on_delete=models.PROTECT)
+    element = models.ForeignKey(Element, on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, on_delete=models.PROTECT)
     data = image_field(size=1280, quality=70)
     thumb = image_field(size=300, quality=80)
     alt = models.CharField(max_length=255, default=uuid.uuid4)
