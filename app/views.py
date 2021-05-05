@@ -5,12 +5,13 @@ from .models import Album, Image
 
 # TODO: refactor to class
 def visible_albums_list(request):
-    return render(request,
-                  'app/album/list.html',
-                  {
-                      'albums': Album.visible.all()
-                  }
-                  )
+    return render(
+        request,
+        'album/list.html',
+        {
+            'albums': Album.visible.all()
+        }
+    )
 
 
 class AlbumDetail(DetailView):
