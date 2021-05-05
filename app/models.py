@@ -11,49 +11,53 @@ class VisibleManager(models.Manager):
         return super(VisibleManager,self).get_queryset().filter(is_visible=True)
 
 
-class Album(models.Model):
-    title = models.CharField(max_length=70)
-    description = models.TextField(max_length=1024)
-    thumb = imagekit.models.ProcessedImageField(
-        upload_to='albums',
-        processors=[ResizeToFit(300)],
-        format='JPEG',
-        options={
-            'quality': 90
-        }
-    )
-    tags = models.CharField(max_length=250)
-    is_visible = models.BooleanField(default=True)
+class Author(models.Model):
+    name = models.CharField(max_length=70)
+
+
+class Timestamp(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now_add=True)
+
+
+class Description(models.Model):
+    title = models.CharField(max_length=70)
+    text = models.TextField(max_length=1024)
+
+
+class Element(models.Model):
+    author = models.ForeignKey('author', on_delete=models.CASCADE)
+    timestamp = models.ForeignKey('timestamp', on_delete=models.CASCADE)
+    description = models.ForeignKey('description', on_delete=models.CASCADE)
+
+
+def image_field(size, quality):
+    return imagekit.models.ProcessedImageField(
+        upload_to='images_storage',
+        processors=[ResizeToFit(size)],
+        format='JPEG',
+        options={
+            'quality': quality
+        }
+    )
+
+
+class Album(models.Model):
+    element = models.ForeignKey('element', on_delete=models.CASCADE)
+    thumb = image_field(size=300, quality=90)
+    tags = models.CharField(max_length=250)
+    is_visible = models.BooleanField(default=True)
     slug = models.SlugField(max_length=50, unique=True)
 
     visible = VisibleManager()
 
-    def __unicode__(self):
-        return self.title
-
 
 class Image(models.Model):
-    image = imagekit.models.ProcessedImageField(
-        upload_to='albums',
-        processors=[ResizeToFit(1280)],
-        format='JPEG',
-        options={
-            'quality': 70
-        }
-    )
-    thumb = imagekit.models.ProcessedImageField(
-        upload_to='albums',
-        processors=[ResizeToFit(300)],
-        format='JPEG',
-        options={
-            'quality': 80
-        }
-    )
+    element = models.ForeignKey('element', on_delete=models.CASCADE)
     album = models.ForeignKey('album', on_delete=models.PROTECT)
+    data = image_field(size=1280, quality=70)
+    thumb = image_field(size=300, quality=80)
     alt = models.CharField(max_length=255, default=uuid.uuid4)
-    created = models.DateTimeField(auto_now_add=True)
     width = models.IntegerField(default=0)
     height = models.IntegerField(default=0)
     slug = models.SlugField(
