@@ -16,8 +16,13 @@ Including another URLconf
 from django.conf.urls import url
 from django.urls import path
 import app.views
+from django.conf.urls.static import static
+
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 urlpatterns = [
-    path('', app.views.visible_albums_list, name='album_list'),
+    path('', app.views.AlbumsList.as_view(), name='album_list'),
     url(r'^(?P<slug>[-\w]+)$', app.views.AlbumDetail.as_view(), name='album'),
-]
+] + static('images_storage', document_root=BASE_DIR / 'app/images_storage')
