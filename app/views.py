@@ -1,9 +1,9 @@
-from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView, ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Album, Image
 
 
-class AlbumsList(ListView):
+class AlbumsList(ListView, LoginRequiredMixin):
     model = Album
     context_object_name = 'albums'
     paginate_by = 3
@@ -16,7 +16,7 @@ class AlbumsList(ListView):
 #     template_name = 'app/visible_albums_list.html'
 
 
-class AlbumDetail(DetailView):
+class AlbumDetail(DetailView, LoginRequiredMixin):
     model = Album
 
     def get_context_data(self, **kwargs):

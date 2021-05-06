@@ -17,6 +17,7 @@ from django.conf.urls import url
 from django.urls import path
 import app.views
 from django.conf.urls.static import static
+from django.urls import include
 
 from pathlib import Path
 
@@ -25,4 +26,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 urlpatterns = [
     path('', app.views.AlbumsList.as_view(), name='album_list'),
     url(r'^(?P<slug>[-\w]+)$', app.views.AlbumDetail.as_view(), name='album'),
+    path('accounts/', include('accounts.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ] + static('images_storage', document_root=BASE_DIR / 'app/images_storage')
