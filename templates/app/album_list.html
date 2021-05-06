@@ -1,0 +1,26 @@
+{% extends "album/base.html" %}
+
+{% block title %}My albums{% endblock %}
+
+{% block content %}
+<div>
+    <div>
+        {% for album in albums %}
+            <div>
+                <div>
+                    <div>
+                        <img src="{{ album.thumb.url }}"
+                             alt="{{ album.element.description.title.title }}"
+                        />
+                    </div>
+                    <div>
+                        <span>{{ album.element.description.title }}</span>
+                        <p>{{ album.element.description.text | truncatechars:120 }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}
