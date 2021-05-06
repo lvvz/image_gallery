@@ -1,32 +1,52 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*- 
-import uuid
 from django.db import models
 import imagekit.models
 from imagekit.processors import ResizeToFit
+import uuid
 
 
 class VisibleManager(models.Manager):
     def get_queryset(self):
-        return super(VisibleManager,self).get_queryset().filter(is_visible=True)
+        return super(VisibleManager, self).get_queryset().filter(is_visible=True)
 
 
 class Author(models.Model):
     name = models.CharField(max_length=70)
+
+    class Meta:
+        ordering = (
+            'name',
+        )
 
 
 class Timestamp(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = (
+            'modified',
+            'created',
+        )
+
 
 class Description(models.Model):
     title = models.CharField(max_length=70)
     text = models.TextField(max_length=1024)
 
+    class Meta:
+        ordering = (
+            'title',
+            'text',
+        )
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)
+
+    class Meta:
+        ordering = (
+            'name',
+        )
 
 
 class Element(models.Model):
@@ -35,10 +55,17 @@ class Element(models.Model):
     description = models.ForeignKey(Description, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag)
 
+    class Meta:
+        ordering = (
+            'author',
+            'timestamp',
+            'description',
+        )
+
 
 def image_field(size, quality):
     return imagekit.models.ProcessedImageField(
-        upload_to='images_storage',
+        upload_to='app/images_storage',
         processors=[ResizeToFit(size)],
         format='JPEG',
         options={
@@ -52,6 +79,12 @@ class Album(models.Model):
     thumb = image_field(size=300, quality=90)
     is_visible = models.BooleanField(default=True)
     slug = models.SlugField(max_length=50, unique=True)
+
+    class Meta:
+        ordering = (
+            'element',
+            'is_visible',
+        )
 
     visible = VisibleManager()
 
