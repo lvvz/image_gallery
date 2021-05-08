@@ -20,6 +20,7 @@ class AlbumDetail(DetailView, LoginRequiredMixin):
     model = Album
 
     def get_context_data(self, **kwargs):
-        context = super(AlbumDetail, self).get_context_data(**kwargs)
-        context['images'] = Image.objects.filter(album=self.object.id)
-        return context
+        return dict(
+            super(AlbumDetail, self).get_context_data(**kwargs),
+            images=Image.objects.filter(album=self.object.id)
+        )
