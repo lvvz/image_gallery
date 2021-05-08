@@ -9,11 +9,25 @@ from django.shortcuts import render, redirect
 from django.db import transaction
 from .forms import UserForm, ProfileForm
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Profile
+
 
 class SignUpView(generic.CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
+
+
+class ProfileView(generic.TemplateView, LoginRequiredMixin):
+    model = Profile
+    template_name = 'registration/profile.html'
+
+    def get_context_data(self, **kwargs):
+        return dict(
+            super(ProfileView, self).get_context_data(**kwargs),
+            profile=self.request.user.profile
+        )
 
 
 @login_required
@@ -26,13 +40,17 @@ def update_profile(request):
             user_form.save()
             profile_form.save()
             messages.success(request, _('Your profile was successfully updated!'))
-            return redirect('settings:profile')
+            return redirect('profile')
         else:
             messages.error(request, _('Please correct the error below.'))
     else:
         user_form = UserForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
-    return render(request, 'registration/profile.html', {
-        'user_form': user_form,
-        'profile_form': profile_form
-    })
+    return render(
+        request,
+        'registration/update_profile.html',
+        {
+            'user_form': user_form,
+            'profile_form': profile_form
+        }
+    )
