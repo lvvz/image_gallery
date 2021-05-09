@@ -5,4 +5,3 @@ from .models import *
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     pass
-
