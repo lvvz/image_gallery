@@ -2,6 +2,8 @@ from django.views.generic import DetailView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Album, Image
 
+from rest_framework import serializers, generics, viewsets, views
+
 
 class AlbumsList(ListView, LoginRequiredMixin):
     model = Album
@@ -20,6 +22,19 @@ class AlbumDetail(DetailView, LoginRequiredMixin):
     model = Album
 
     def get_context_data(self, **kwargs):
-        context = super(AlbumDetail, self).get_context_data(**kwargs)
-        context['images'] = Image.objects.filter(album=self.object.id)
-        return context
+        return dict(
+            super(AlbumDetail, self).get_context_data(**kwargs),
+            images=Image.objects.filter(album=self.object.id)
+        )
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    many = True
+
+    class Meta:
+        model = Album
+
+
+# class AlbumListAPIView(viewsets.ModelViewSet):
+#     queryset = Album.objects.all()
+#     serializer_class = AlbumSerializer
