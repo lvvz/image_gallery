@@ -1,14 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 
-users = User.objects.all().select_related('profile')
-
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class User(AbstractUser):
     birthday = models.DateField(null=True)
     MALE = 'M'
     FEMALE = 'F'
@@ -19,6 +15,13 @@ class Profile(models.Model):
             (FEMALE, 'Female'),
         ],
     )
+
+
+users = User.objects.all().select_related('profile')
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
 
