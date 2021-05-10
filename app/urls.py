@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.urls import path
-import app.views
+from app.views import *
 from django.conf.urls.static import static
 from django.urls import include
 
@@ -24,7 +24,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 urlpatterns = [
-    path('', app.views.AlbumsList.as_view(), name='album_list'),
-    path('upload', app.views.create_album, name='album_upload'),
-    url(r'^(?P<slug>[-\w]+)$', app.views.AlbumDetail.as_view(), name='album'),
+    path('', AlbumsList.as_view(), name='album_list'),
+    path('upload', create_album, name='album_upload'),
+    path('about/', AboutView.as_view(), name='about'),
+    url(r'^(?P<slug>[-\w]+)$', AlbumDetail.as_view(), name='album'),
 ] + static('images_storage', document_root=BASE_DIR / 'app/images_storage')

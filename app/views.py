@@ -1,4 +1,5 @@
-from django.views.generic import DetailView, ListView, FormView, View, TemplateView, CreateView
+import django.views.generic
+from django.views.generic import DetailView, ListView, FormView, View, TemplateView, CreateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import *
 
@@ -82,6 +83,20 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
+
+
+class AboutView(TemplateView):
+    template_name = 'app/about.html'
+
+    def get_context_data(self, **kwargs):
+        return dict(
+            super().get_context_data(**kwargs),
+            about_info_strings=[
+                "This is image gallery",
+                "Made by O. Vovchok.",
+            ]
+        )
+
 
 # class AlbumListAPIView(viewsets.ModelViewSet):
 #     queryset = Album.objects.all()
