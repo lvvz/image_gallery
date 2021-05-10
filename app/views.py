@@ -1,14 +1,63 @@
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, FormView, View, TemplateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Album, Image
+from .forms import *
 
-from rest_framework import serializers, generics, viewsets, views
+from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.views import login_required
+from django.shortcuts import render, redirect
+
+from rest_framework import serializers
+# , generics, viewsets, views
 
 
 class AlbumsList(ListView, LoginRequiredMixin):
     model = Album
     context_object_name = 'albums'
     paginate_by = 3
+
+
+@login_required
+def create_album(request):
+    if request.method == 'POST':
+        author_form = AuthorForm(request.POST, instance=Author())
+        timestamp_form = TimestampForm(request.POST, instance=Timestamp())
+        description_form = DescriptionForm(request.POST, instance=Description())
+        element_form = ElementForm(request.POST, instance=Element())
+        album_form = AlbumForm(request.POST, request.FILES, instance=Album())
+        if all(form.is_valid() for form in [author_form, timestamp_form, description_form, element_form, album_form]):
+            new_author = author_form.save()
+            new_timestamp = timestamp_form.save()
+            new_description = description_form.save()
+            new_element = element_form.save(commit=False)
+            new_element.author = new_author
+            new_element.timestamp = new_timestamp
+            new_element.description = new_description
+            new_element.save()
+            new_album = album_form.save(commit=False)
+            new_album.element = new_element
+            new_album.save()
+            messages.success(request, _('Create was successful!'))
+            return redirect('album_list')
+        else:
+            messages.error(request, _('Please correct the error below.'))
+    else:
+        author_form = AuthorForm(instance=Author())
+        timestamp_form = TimestampForm(instance=Timestamp())
+        description_form = DescriptionForm(instance=Description())
+        element_form = ElementForm(instance=Element())
+        album_form = AlbumForm(instance=Album())
+    return render(
+        request,
+        'app/album_form.html',
+        {
+            'author': author_form,
+            'timestamp': timestamp_form,
+            'description': description_form,
+            'element': element_form,
+            'album': album_form,
+        }
+    )
 
 
 # class VisibleAlbumsList(ListView):
@@ -33,7 +82,6 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-
 
 # class AlbumListAPIView(viewsets.ModelViewSet):
 #     queryset = Album.objects.all()
