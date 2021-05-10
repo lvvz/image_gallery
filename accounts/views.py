@@ -7,14 +7,14 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.views import login_required
 from django.shortcuts import render, redirect
 from django.db import transaction
-from .forms import UserForm, ProfileForm
+from .forms import *
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Profile
 
 
 class SignUpView(generic.CreateView):
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
 
@@ -26,7 +26,8 @@ class ProfileView(generic.TemplateView, LoginRequiredMixin):
     def get_context_data(self, **kwargs):
         return dict(
             super(ProfileView, self).get_context_data(**kwargs),
-            profile=self.request.user.profile
+            user=self.request.user,
+            profile=self.request.user.profile,
         )
 
 

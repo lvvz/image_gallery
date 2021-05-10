@@ -25,5 +25,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 urlpatterns = [
     path('', app.views.AlbumsList.as_view(), name='album_list'),
+    path('upload', app.views.create_album, name='album_upload'),
     url(r'^(?P<slug>[-\w]+)$', app.views.AlbumDetail.as_view(), name='album'),
 ] + static('images_storage', document_root=BASE_DIR / 'app/images_storage')

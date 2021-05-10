@@ -4,9 +4,11 @@
 
 {% block content %}
     <h1>Profile</h1>
-    <p><strong>Birthday:</strong>{{ profile.birthday }}</p>
-    <p><strong>Gender:</strong>{{ profile.gender }}</p>
+    <p><strong>Email:</strong>{{ user.email }}</p>
+    <p><strong>Birthday:</strong>{{ user.birthday }}</p>
+    <p><strong>Gender:</strong>{{ user.gender }}</p>
     <p><strong>Bio:</strong>{{ profile.bio }}</p>
     <p><strong>Location:</strong>{{ profile.location }}</p>
     <p><a href="{% url 'update_profile' %}">Update profile</a></p>
+    <p><a href="{% url 'album_upload' %}">Upload an album</a></p>
 {% endblock %}
